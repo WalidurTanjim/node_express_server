@@ -142,16 +142,39 @@ app.put("/users/:id", async(req: Request, res: Response) => {
           const result = await pool.query(`UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING *`, [name, email, req?.params?.id]);
           
           if(result?.rows?.length > 0) {
-               res.status(200).json({
+               res.status(201).json({
                     success: true,
                     message: "User updated successfully",
                     data: result?.rows[0]
                })
           }else {
-               res.status(200).json({
-                    success: true,
+               res.status(500).json({
+                    success: false,
                     message: "User not found!",
                     data: result?.rows
+               })
+          }
+     }catch(err: any) {
+          res.status(500).json({
+               success: false,
+               message: err?.message
+          })
+     }
+})
+
+app.delete("/users/:id", async(req: Request, res: Response) => {
+     try{
+          const result = await pool.query(`DELETE FROM users WHERE id=$1`, [req?.params?.id]);
+          
+          if(result?.rowCount === 0) {
+               res.status(500).json({
+                    success: false,
+                    message: "User not found!"
+               })
+          }else {
+               res.status(204).json({
+                    success: true,
+                    message: "User deleted successfully"
                })
           }
      }catch(err: any) {
