@@ -315,6 +315,16 @@ app.delete("/todos/:id", async(req: Request, res: Response) => {
 })
 
 
+// 404 not found route
+app.use((req: Request, res: Response) => {
+     res.status(404).json({
+          success: false,
+          message: "Route not found!",
+          path: req?.path
+     })
+})
+
+
 // server start function
 const startServer = async () => {
      try {
