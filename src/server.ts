@@ -265,6 +265,32 @@ app.get("/todos/:id", async(req: Request, res: Response) => {
      }
 })
 
+app.put("/todos/:id", async(req: Request, res: Response) => {
+     const { user_id, title } = req?.body;
+
+     try{
+          const result = await pool.query(`UPDATE todos SET user_id=$1, title=$2 WHERE id=$3 RETURNING *`, [user_id, title, req?.params?.id]);
+
+          if(result?.rows.length > 0) {
+               res.status(201).json({
+                    success: true,
+                    message: "Todo updated successfully",
+                    data: result?.rows[0]
+               })
+          }else {
+               res.status(500).json({
+                    success: false,
+                    message: "Failed to update"
+               })
+          }
+     }catch(err: any) {
+          res.status(500).json({
+               success: false,
+               message: err?.message
+          })
+     }
+})
+
 app.delete("/todos/:id", async(req: Request, res: Response) => {
      try{
           const result = await pool.query(`DELETE FROM todos WHERE id=$1`, [req?.params?.id]);
@@ -304,22 +330,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// res.status(200).json({
-//      success: true,
-//      message: "Users retrived successfully",
-//      data: result?.rows
-// })
-
-// res.status(500).json({
-//      success: false,
-//      message: "User not found!",
-//      data: result?.rows
-// })
-
-// catch(err: any) {
-//      res.status(500).json({
-//           success: false,
-//           message: err?.message
-//      })
-// }
