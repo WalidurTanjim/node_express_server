@@ -241,6 +241,30 @@ app.get("/todos", async(req: Request, res: Response) => {
      }
 })
 
+app.get("/todos/:id", async(req: Request, res: Response) => {
+     try{
+          const result = await pool.query(`SELECT * FROM todos WHERE id=$1`, [req?.params?.id]);
+
+          if(result?.rows.length > 0) {
+               res.status(200).json({
+                    success: true,
+                    message: "Todo retrived successfully",
+                    data: result?.rows[0]
+               })
+          }else {
+               res.status(500).json({
+                    success: false,
+                    message: "Todos not found!"
+               })
+          }
+     }catch(err: any) {
+          res.status(500).json({
+               success: false,
+               message: err?.message
+          })
+     }
+})
+
 
 // server start function
 const startServer = async () => {
